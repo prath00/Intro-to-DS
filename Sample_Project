@@ -1,0 +1,94 @@
+# dataset reference : https://www.kaggle.com/datasets/loveall/appliances-energy-prediction
+
+###Downloading all the library required for the project
+import numpy as np 
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import preprocessing, model_selection, metrics
+ 
+
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
+from  sklearn.linear_model import Ridge
+import warnings
+warnings.filterwarnings("ignore")
+from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import Lasso
+from  sklearn.preprocessing  import PolynomialFeatures
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import ElasticNet
+from sklearn.svm import SVR
+from sklearn.svm import LinearSVR
+
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
+
+!hdfs dfs -get /user/sprathyusha/energy_consumption.csv
+data = pd.read_csv('./energy_consumption.csv')
+data.head()
+
+# Features to be removed from the input dataset
+# Date, Light, 
+
+data.info()
+# rows : 19734   Col : 29
+
+#Function to convert categorical data to label encoding(We are not using Onehot encoders as the variable is ordinal)
+def conditions(df):
+    if (df['Tdewpoint']== 'LDT'):
+        return 0
+    elif (df['Tdewpoint']== 'ADT'):
+        return 1
+    elif (df['Tdewpoint']== 'NDT'):
+        return 2
+    else:
+        return 3    
+
+data['Tdewpoint']= data.apply(conditions, axis=1)
+
+data.head()
+
+# Missing values
+pd.DataFrame(data.isna().sum(), columns=["records missing"]).T
+
+# drop the col - date and light
+data= data.drop('lights', axis=1)
+
+data= data.drop('date', axis=1)
+
+data.head(3)
+
+## Divide the columns based on type for clear column management 
+
+col_temp = ["T1","T2","T3","T4","T5","T6","T7","T8","T9"]
+
+col_hum = ["RH_1","RH_2","RH_3","RH_4","RH_5","RH_6","RH_7","RH_8","RH_9"]
+
+col_weather = ["T_out", "Tdewpoint","RH_out","Press_mm_hg",
+                "Windspeed","Visibility"] 
+
+col_randoms = ["rv1", "rv2"]
+
+col_target = ["Appliances"]
+
+# Seperate dependent and independent variables 
+feature_vars = data[col_temp + col_hum + col_weather + col_randoms] 
+target_vars = data[col_target]
+
+feature_vars.describe()
+
+target_vars.describe()
+
+# Histogram of all the features to understand the distribution
+feature_vars.hist(bins = 20 , figsize= (12,16)) ;
+
